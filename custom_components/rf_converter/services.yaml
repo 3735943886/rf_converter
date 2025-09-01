@@ -1,0 +1,14 @@
+reload_remote:
+  description: Reload remote devices
+
+send_command:
+  description: Send RF command
+  fields:
+    remote:
+      description: Name of remote controller
+      example: 'My Remote'
+      required: true
+    key:
+      description: Name of key
+      example: 'Power On'
+      required: true

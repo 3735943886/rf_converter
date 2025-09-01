@@ -1,0 +1,9 @@
+{
+  "codeowners": ["@3735943886"],
+  "domain": "rf_converter",
+  "name": "RF Converter Assistant",
+  "config_flow": true,
+  "documentation": "https://3735943886.visualstudio.com/rf_converter/_wiki/wikis/rf_converter.wiki/6/Readme",
+  "issue_tracker": "https://3735943886.visualstudio.com/rf_converter/_workitems/",
+  "version": "0.3.0"
+}
