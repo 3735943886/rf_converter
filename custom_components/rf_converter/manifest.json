@@ -3,7 +3,7 @@
   "domain": "rf_converter",
   "name": "RF Converter Assistant",
   "config_flow": true,
-  "documentation": "https://github.com/3735943886/rf_converter"
-  "issue_tracker": "https://github.com/3735943886/rf_converter/issues"
+  "documentation": "https://github.com/3735943886/rf_converter",
+  "issue_tracker": "https://github.com/3735943886/rf_converter/issues",
   "version": "0.3.0"
 }
