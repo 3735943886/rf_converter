@@ -1,6 +1,6 @@
 ![Icon](images/icon.png)
 
-# RF Converter Assistant Custom Component
+# RF Converter Assistant
 
 The `RF Converter Assistant` is a custom component for Home Assistant that enables direct communication with the **RF Converter V3.0** to control devices using RF signals.
 
