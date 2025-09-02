@@ -25,7 +25,7 @@ The `RF Converter Assistant` is a custom component for Home Assistant that enabl
 ## Component Configuration
 
 1.  Add the `RF Converter Assistant` integration in Home Assistant.
-2.  When prompted, enter your username from the `Safemate` app.
+2.  When prompted, enter your username found in the `Safemate` app.
 
 ## Usage
 
