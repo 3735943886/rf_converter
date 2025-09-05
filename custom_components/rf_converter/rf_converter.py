@@ -82,7 +82,7 @@ class rf_converter:
         packet = self.PacketBuilder(
           self.remote_data[remote]['type'],
           self.remote_data[remote]['project'],
-          f'{uuid.getnode():x}',
+          f'{uuid.getnode():x}'.zfill(12),
           self.remote_data[remote]['mac'],
           self.remote_data[remote]['id'],
           self.remote_data[remote]['frequency'],
