@@ -5,8 +5,16 @@
                 "data": {
                     "username": "Username"
                 },
-                "title": "Add RF Converter Account."
+                "title": "Add RF Converter Account"
             }
+        },
+        "error": {
+            "cannot_connect": "Failed to connect to the vendor server or received invalid data.",
+            "invalid_account": "The vendor server returned an error for this username. Check the username shown in the Safemate app.",
+            "unknown": "Unexpected error."
+        },
+        "abort": {
+            "single_instance_allowed": "Only a single instance is allowed."
         }
     }
 }
