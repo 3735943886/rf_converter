@@ -1,9 +1,10 @@
 {
-  "codeowners": ["@3735943886"],
   "domain": "rf_converter",
   "name": "RF Converter Assistant",
+  "codeowners": ["@3735943886"],
   "config_flow": true,
   "documentation": "https://github.com/3735943886/rf_converter",
   "issue_tracker": "https://github.com/3735943886/rf_converter/issues",
+  "iot_class": "local_push",
   "version": "0.3.1"
 }
