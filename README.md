@@ -34,6 +34,19 @@ The `RF Converter Assistant` is a custom component for Home Assistant that enabl
 
 -----
 
+## Security and Data Transmission
+
+Please read this section before installing.
+
+- **Plaintext HTTP**: When remote controller data is loaded (on first setup and when the `reload_remote` action is called), the integration sends your Safemate account name and a fixed request code to the vendor's server at `http://47.254.152.213/`. This request uses plain HTTP, so the data is **not encrypted** and can be read by anyone on the network path.
+- **Vendor app behavior**: The official Safemate app also transmits data in plaintext, as observed by the maintainer. This integration follows the same communication method as the vendor app.
+- **Fixed request code**: The request code used in this integration is the same value that the official Safemate app sends with its requests. It is shared across all installations, is not a per-user credential, and is not an official API key. It is not a hidden value.
+- **Vendor server dependency**: Remote controller data is retrieved from the vendor's cloud server. If the server is unavailable, the initial setup and the `reload_remote` action will fail. Once the data has been saved locally (in Home Assistant's `.storage` directory), commands are sent directly to the RF Converter over the local network (UDP port 26258) and do not require the vendor server.
+
+Use this integration at your own discretion, on a network you trust.
+
+-----
+
 ## Usage
 
 Once installed, the following actions will be available. No devices or entities are created by this integration.
@@ -41,6 +54,8 @@ Once installed, the following actions will be available. No devices or entities 
   - **RF Converter Assistant: reload\_remote**: This action obtains remote controller data from the vendor's cloud server and saves it locally. It's automatically called during the first run. Use this manually to update local data if any changes are made to remotes in the `Safemate` app.
 
   - **RF Converter Assistant: send\_command**: This action sends an RF signal from the RF Converter V3.0 to a target device. The `remote` and `key` parameters must be provided, which must exactly match the names used in the `Safemate` app.
+
+> **Note**: The RF Converter's IP address is taken from the saved remote controller data. If the converter's IP address changes (e.g. a new DHCP lease), call `reload_remote` to update it.
 
 ### Example YAML
 

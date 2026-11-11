@@ -1,5 +1,6 @@
 DOMAIN = 'rf_converter'
-CONF_FILE = '/config/custom_components/rf_converter/rf_data.json'
+STORAGE_KEY = DOMAIN
+STORAGE_VERSION = 1
 REQUESTURL = 'http://47.254.152.213/yetcloud_release/'
 IOS_REQUEST = {
   'security_code': 'DSKWIJAKZXLQPSZMANXVTBFGYHPNVCRE',
@@ -23,3 +24,5 @@ ANDROID_REQUEST = {
     'User-Agent': 'okhttp/3.12.0'
   }
 }
+SECURITY_CODE = ANDROID_REQUEST['security_code']
+HEADERS = ANDROID_REQUEST['headers']

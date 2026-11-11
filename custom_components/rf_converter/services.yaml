@@ -1,14 +1,22 @@
 reload_remote:
-  description: Reload remote devices
+  name: Reload remote
+  description: Reload remote controller data from the vendor server.
 
 send_command:
-  description: Send RF command
+  name: Send command
+  description: Send an RF command.
   fields:
     remote:
-      description: Name of remote controller
+      name: Remote
+      description: Name of the remote controller.
       example: 'My Remote'
       required: true
+      selector:
+        text:
     key:
-      description: Name of key
+      name: Key
+      description: Name of the key.
       example: 'Power On'
       required: true
+      selector:
+        text:

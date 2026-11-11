@@ -1,68 +1,91 @@
-import json
 import logging
 
-from .const import *
-from .rf_converter import rf_converter
-from homeassistant.core import HomeAssistant, ServiceCall, callback
-from homeassistant.const import CONF_USERNAME
-from homeassistant.config_entries import ConfigEntry
+import voluptuous as vol
 
-# DEFINE DOMAIN
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_USERNAME
+from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.exceptions import ConfigEntryError, ConfigEntryNotReady, HomeAssistantError, ServiceValidationError
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.storage import Store
+
+from .const import DOMAIN, HEADERS, REQUESTURL, SECURITY_CODE, STORAGE_KEY, STORAGE_VERSION
+from .rf_converter import CannotConnect, InvalidAccount, RemoteNotFound, RfConverterError, fetch_remote_data, rf_converter, validate_remote_data
+
 _LOGGER = logging.getLogger(__name__)
 
-# DEFINE CONSTANTS
-SECURITY_CODE = ANDROID_REQUEST['security_code']
-HEADERS = ANDROID_REQUEST['headers']
+SERVICE_RELOAD_REMOTE = 'reload_remote'
+SERVICE_SEND_COMMAND = 'send_command'
+SEND_COMMAND_SCHEMA = vol.Schema({
+  vol.Required('remote'): cv.string,
+  vol.Required('key'): cv.string,
+})
 
-# DEFINE GLOBAL VARIABLES
-ACCOUNT = None
-RF = None
 
-
-def InitConf(forcereload):
-  global _LOGGER, CONF_FILE, ACCOUNT, REQUESTURL, SECURITY_CODE, HEADERS, RF
+def _cached_remotes(cache, account):
+  if not isinstance(cache, dict) or cache.get('account') != account:
+    return None
   try:
-    if forcereload == True:
-      raise Exception('Skip loading file')
-    with open(CONF_FILE, 'r') as f:
-      RF.remote_data = json.load(f)
-    RF.CreatePacket(next(iter(RF.remote_data)), '')
-  except:
-    _LOGGER.info('Create new config file')
-    result = RF.GetRemote(REQUESTURL, ACCOUNT, SECURITY_CODE, HEADERS)
-    if result == 0:
-      with open(CONF_FILE, 'w') as f:
-        json.dump(RF.remote_data, f)
-    else:
-      _LOGGER.warning('Error code: {}'.format(result))
+    validate_remote_data(cache.get('remotes'))
+  except ValueError as err:
+    _LOGGER.info('Ignoring invalid cached remote data: %s', err)
+    return None
+  return cache['remotes']
 
 
-def Command(remote, key):
-  global _LOGGER, RF
+async def _async_load_remote_data(hass, store, rf, account, force_reload):
+  if not force_reload:
+    try:
+      cache = await store.async_load()
+    except HomeAssistantError as err:
+      _LOGGER.info('Ignoring unreadable cached remote data: %s', err)
+      cache = None
+    remotes = _cached_remotes(cache, account)
+    if remotes is not None:
+      rf.remote_data = remotes
+      return
+  remotes = await hass.async_add_executor_job(fetch_remote_data, REQUESTURL, account, SECURITY_CODE, HEADERS)
+  rf.remote_data = remotes
+  await store.async_save({'account': account, 'remotes': remotes})
 
-  result = RF.SendCommand(remote, key)
-  if result == False:
-    _LOGGER.warning('Remote [{}]/[{}] not found'.format(remote, key))
 
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+  account = entry.data[CONF_USERNAME]
+  store = Store(hass, STORAGE_VERSION, STORAGE_KEY)
+  rf = rf_converter()
 
-async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry) -> bool:
-  global _LOGGER, ACCOUNT, DOMAIN, CONF_USERNAME, RF
+  try:
+    await _async_load_remote_data(hass, store, rf, account, False)
+  except InvalidAccount as err:
+    raise ConfigEntryError(f'Vendor server rejected account {account!r}: {err}') from err
+  except CannotConnect as err:
+    raise ConfigEntryNotReady(f'Cannot load remote data from vendor server: {err}') from err
 
-  RF = rf_converter()
-
-  @callback
   async def reload_remote(call: ServiceCall) -> None:
-    await hass.async_add_executor_job(InitConf, True)
+    try:
+      await _async_load_remote_data(hass, store, rf, account, True)
+    except RfConverterError as err:
+      raise HomeAssistantError(f'Failed to reload remote data: {err}') from err
 
-  @callback
   async def send_command(call: ServiceCall) -> None:
-    await hass.async_add_executor_job(Command, call.data['remote'], call.data['key'])
+    try:
+      await hass.async_add_executor_job(rf.SendCommand, call.data['remote'], call.data['key'])
+    except RemoteNotFound as err:
+      raise ServiceValidationError(str(err)) from err
+    except (OSError, ValueError) as err:
+      raise HomeAssistantError(f'Failed to send command: {err}') from err
 
-  ACCOUNT = config.data[CONF_USERNAME]
-
-  await hass.async_add_executor_job(InitConf, False)
-
-  hass.services.async_register(DOMAIN, 'reload_remote', reload_remote)
-  hass.services.async_register(DOMAIN, 'send_command', send_command)
+  hass.services.async_register(DOMAIN, SERVICE_RELOAD_REMOTE, reload_remote)
+  hass.services.async_register(DOMAIN, SERVICE_SEND_COMMAND, send_command, schema = SEND_COMMAND_SCHEMA)
 
   return True
+
+
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+  hass.services.async_remove(DOMAIN, SERVICE_RELOAD_REMOTE)
+  hass.services.async_remove(DOMAIN, SERVICE_SEND_COMMAND)
+  return True
+
+
+async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+  await Store(hass, STORAGE_VERSION, STORAGE_KEY).async_remove()
