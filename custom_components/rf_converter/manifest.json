@@ -1,6 +1,6 @@
 {
   "domain": "rf_converter",
-  "name": "RF Converter Assistant",
+  "name": "RF Converter",
   "codeowners": ["@3735943886"],
   "config_flow": true,
   "documentation": "https://github.com/3735943886/rf_converter",

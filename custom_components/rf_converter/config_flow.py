@@ -31,6 +31,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain = DOMAIN):
         _LOGGER.exception('Unexpected error while validating account')
         errors['base'] = 'unknown'
       else:
-        return self.async_create_entry(title = f'RF Converter Assistant - {account}', data = {CONF_USERNAME: account})
+        return self.async_create_entry(title = f'RF Converter - {account}', data = {CONF_USERNAME: account})
 
     return self.async_show_form(step_id = 'user', data_schema = vol.Schema({vol.Required(CONF_USERNAME): cv.string}), errors = errors)
