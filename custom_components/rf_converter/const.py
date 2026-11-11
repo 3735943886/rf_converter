@@ -1,5 +1,5 @@
 DOMAIN = 'rf_converter'
-CONF_FILE = '/config/custom_components/rf_converter/rf_data.json'
+CACHE_FILE_NAME = 'rf_converter_data.json'
 REQUESTURL = 'http://47.254.152.213/yetcloud_release/'
 IOS_REQUEST = {
   'security_code': 'DSKWIJAKZXLQPSZMANXVTBFGYHPNVCRE',

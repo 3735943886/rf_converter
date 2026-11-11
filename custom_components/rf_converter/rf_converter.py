@@ -2,6 +2,8 @@ import requests
 import socket
 import uuid
 
+REQUEST_TIMEOUT = 15
+
 
 class rf_converter:
   remote_data = {}
@@ -14,27 +16,29 @@ class rf_converter:
 
 
   def GetRemote(self, requesturlbase, account, security_code, headers):
-    device_response = requests.post(requesturlbase + 'get_all_device_data.php', data = {'account': account, 'security_code': security_code }, headers = headers)
+    device_response = requests.post(requesturlbase + 'get_all_device_data.php', data = {'account': account, 'security_code': security_code }, headers = headers, timeout = REQUEST_TIMEOUT)
     device_response.raise_for_status()
     devices = device_response.json()
-    self.remote_data = {}
+    remote_data = {}
     if devices['result'] == 0:
       for i in range(len(devices['message'])):
-        remote_response = requests.post(requesturlbase + 'get_remote_controller.php', data = {'mac': devices['message'][i]['mac'], 'security_code': security_code}, headers = headers)
+        remote_response = requests.post(requesturlbase + 'get_remote_controller.php', data = {'mac': devices['message'][i]['mac'], 'security_code': security_code}, headers = headers, timeout = REQUEST_TIMEOUT)
         remote_response.raise_for_status()
         remotes = remote_response.json()
         if remotes['result'] == 0:
           for j in range(len(remotes['message'])):
-            self.remote_data[remotes['message'][j]['r_name']] = {}
-            self.remote_data[remotes['message'][j]['r_name']]['ip'] = devices['message'][i]['ip']
-            self.remote_data[remotes['message'][j]['r_name']]['mac'] = devices['message'][i]['mac']
-            self.remote_data[remotes['message'][j]['r_name']]['type'] = devices['message'][i]['type']
-            self.remote_data[remotes['message'][j]['r_name']]['project'] = devices['message'][i]['project']
-            self.remote_data[remotes['message'][j]['r_name']]['frequency'] = remotes['message'][j]['frequency']
-            self.remote_data[remotes['message'][j]['r_name']]['id'] = remotes['message'][j]['id']
-            self.remote_data[remotes['message'][j]['r_name']]['key'] = {}
+            remote_data[remotes['message'][j]['r_name']] = {}
+            remote_data[remotes['message'][j]['r_name']]['ip'] = devices['message'][i]['ip']
+            remote_data[remotes['message'][j]['r_name']]['mac'] = devices['message'][i]['mac']
+            remote_data[remotes['message'][j]['r_name']]['type'] = devices['message'][i]['type']
+            remote_data[remotes['message'][j]['r_name']]['project'] = devices['message'][i]['project']
+            remote_data[remotes['message'][j]['r_name']]['frequency'] = remotes['message'][j]['frequency']
+            remote_data[remotes['message'][j]['r_name']]['id'] = remotes['message'][j]['id']
+            remote_data[remotes['message'][j]['r_name']]['key'] = {}
             for k in range(len(remotes['message'][j]['key'])):
-              self.remote_data[remotes['message'][j]['r_name']]['key'][remotes['message'][j]['key'][k]['k_name']] = remotes['message'][j]['key'][k]['value']
+              remote_data[remotes['message'][j]['r_name']]['key'][remotes['message'][j]['key'][k]['k_name']] = remotes['message'][j]['key'][k]['value']
+    if devices['result'] == 0:
+      self.remote_data = remote_data
     return devices['result']
 
 
