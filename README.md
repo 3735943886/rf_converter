@@ -1,8 +1,8 @@
 ![Icon](images/icon.png)
 
-# RF Converter Assistant
+# RF Converter
 
-The `RF Converter Assistant` is a custom component for Home Assistant that enables direct communication with the **RF Converter V3.0** to control devices using RF signals.
+The `RF Converter` is a custom component for Home Assistant that enables direct communication with the **RF Converter V3.0** to control devices using RF signals.
 
 [Product Homepage](https://www.yetremotecontrol.com/products-detail-165885)
 
@@ -16,7 +16,7 @@ The `RF Converter Assistant` is a custom component for Home Assistant that enabl
 
 1.  **Add Custom Repository**: In Home Assistant, go to **HACS** \> **Integrations**. Click the three-dot menu in the top right and select **Custom repositories**.
 2.  **Enter Repository Details**: In the pop-up, enter `https://github.com/3735943886/rf_converter` as the **Repository URL**. For the **Category**, select **Integration**. Then, click **Add**.
-3.  **Install the Integration**: Search for "**RF Converter Assistant**" in the HACS Integrations section. Click on it and then click the **Download** button.
+3.  **Install the Integration**: Search for "**RF Converter**" in the HACS Integrations section. Click on it and then click the **Download** button.
 4.  **Restart Home Assistant**: Restart the Home Assistant instance to complete the installation.
 
 ### 2\. Manual Installation
@@ -29,7 +29,7 @@ The `RF Converter Assistant` is a custom component for Home Assistant that enabl
 
 ## Component Configuration
 
-1.  Add the `RF Converter Assistant` integration in Home Assistant.
+1.  Add the `RF Converter` integration in Home Assistant.
 2.  When prompted, enter the username found in the `Safemate` app.
 
 -----
@@ -51,9 +51,9 @@ Use this integration at your own discretion, on a network you trust.
 
 Once installed, the following actions will be available. No devices or entities are created by this integration.
 
-  - **RF Converter Assistant: reload\_remote**: This action obtains remote controller data from the vendor's cloud server and saves it locally. It's automatically called during the first run. Use this manually to update local data if any changes are made to remotes in the `Safemate` app.
+  - **RF Converter: reload\_remote**: This action obtains remote controller data from the vendor's cloud server and saves it locally. It's automatically called during the first run. Use this manually to update local data if any changes are made to remotes in the `Safemate` app.
 
-  - **RF Converter Assistant: send\_command**: This action sends an RF signal from the RF Converter V3.0 to a target device. The `remote` and `key` parameters must be provided, which must exactly match the names used in the `Safemate` app.
+  - **RF Converter: send\_command**: This action sends an RF signal from the RF Converter V3.0 to a target device. The `remote` and `key` parameters must be provided, which must exactly match the names used in the `Safemate` app.
 
 > **Note**: The RF Converter's IP address is taken from the saved remote controller data. If the converter's IP address changes (e.g. a new DHCP lease), call `reload_remote` to update it.
 
