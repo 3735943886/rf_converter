@@ -42,7 +42,6 @@ Please read this section before installing.
 - **Vendor app behavior**: The official Safemate app also transmits data in plaintext, as observed by the maintainer. This integration follows the same communication method as the vendor app.
 - **Fixed request code**: The request code used in this integration is the same value that the official Safemate app sends with its requests. It is shared across all installations, is not a per-user credential, and is not an official API key. It is not a hidden value.
 - **Vendor server dependency**: Remote controller data is retrieved from the vendor's cloud server. If the server is unavailable, the initial setup and the `reload_remote` action will fail. Once the data has been saved locally (`rf_data.json`), commands are sent directly to the RF Converter over the local network (UDP port 26258) and do not require the vendor server.
-- **Vendor support**: The vendor is a small company that is currently not responding to inquiries. This integration is not affiliated with or endorsed by the vendor.
 
 Use this integration at your own discretion, on a network you trust.
 
