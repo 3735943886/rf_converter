@@ -34,6 +34,20 @@ The `RF Converter Assistant` is a custom component for Home Assistant that enabl
 
 -----
 
+## Security and Data Transmission
+
+Please read this section before installing.
+
+- **Plaintext HTTP**: When remote controller data is loaded (on first setup and when the `reload_remote` action is called), the integration sends your Safemate account name and a fixed request code to the vendor's server at `http://47.254.152.213/`. This request uses plain HTTP, so the data is **not encrypted** and can be read by anyone on the network path.
+- **Vendor app behavior**: The official Safemate app also transmits data in plaintext, as observed by the maintainer. This integration follows the same communication method as the vendor app.
+- **Fixed request code**: The request code used in this integration is a value shared across all installations. It is not a per-user credential and it is not an official API key. It is included in the source code and cannot be kept secret.
+- **Vendor server dependency**: Remote controller data is retrieved from the vendor's cloud server. If the server is unavailable, the initial setup and the `reload_remote` action will fail. Once the data has been saved locally (`rf_data.json`), commands are sent directly to the RF Converter over the local network (UDP port 26258) and do not require the vendor server.
+- **Vendor support**: The vendor is a small company that is currently not responding to inquiries. This integration is not affiliated with or endorsed by the vendor.
+
+Use this integration at your own discretion, on a network you trust.
+
+-----
+
 ## Usage
 
 Once installed, the following actions will be available. No devices or entities are created by this integration.
